@@ -1,0 +1,35 @@
+.taskCard {
+    background-color: #0A155A;
+    color: #BBC2D8;
+    line-height: 1rem;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 1rem auto;
+    transition-property: all;
+    transition-duration: 1s;
+    transition-delay: .1s;
+}
+
+.taskCard:hover {
+    margin: 0.7rem auto;
+    transform: scale(1.03);
+}
+
+.checkBox {
+    min-height: 1rem;
+    min-width: 1rem;
+    border-radius: 100%;
+    border: 3px solid #D103FC;
+    background-color: #0A155A;
+}
+
+.action {
+    cursor: pointer;
+    transition-property: all;
+    transition-duration: 1s;
+    transition-delay: .1s;
+}
+
+.action:hover {
+    font-size: 22px;
+}
