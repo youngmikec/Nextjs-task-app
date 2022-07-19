@@ -1,7 +1,8 @@
 .streakCard {
     background-color: #0A155A;
     color: #BBC2D8;
-    line-height: 1rem;
+    line-height: 1.5rem;
     border-radius: 30px;
     padding: 1rem;
+    text-align: justify;
 }

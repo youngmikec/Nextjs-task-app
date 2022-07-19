@@ -67,7 +67,7 @@ export default function TaskDetail ({task}: any) {
                         <p>User Id: {task?.userId}</p>
                         <p>Task Id: {task?.id}</p>
                         <p>Title: {task?.title}</p>
-                        <p>Status: {task?.completed}</p>
+                        <p>Status: {task.completed === true ? 'Completed' : 'Not completed'}</p>
                     </div>
                     :
                     <div className="streakCard">

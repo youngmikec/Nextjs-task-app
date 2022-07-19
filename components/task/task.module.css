@@ -10,6 +10,10 @@
     transition-delay: .1s;
 }
 
+.completed {
+    text-decoration: line-through;
+}
+
 .taskCard:hover {
     margin: 0.7rem auto;
     transform: scale(1.03);

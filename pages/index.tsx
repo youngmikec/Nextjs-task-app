@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react';
 import StreakCard from '../components/streak-card/streak-card'
 import TaskCard from '../components/task/task'
+import { Task } from '../components/types';
 import styles from '../styles/Home.module.css';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -29,12 +30,92 @@ const Home: NextPage = ({tasks}: any) => {
   const [completedTasks, setCompletedTasks] = useState<number>(0);
   const [totalTasks, setTotalTasks] = useState<number>(0);
   const [unCompletedTasks, setUnCompletedTasks] = useState<number>(0);
+  const [taskArray, setTaskArray] = useState<Task[] | any[]>([]);
+  const [currentTask, setCurrentTask] = useState<Task | any>(null);
 
-  const hydrateTasks = (tasks: any[]) => {
-    let completedTasks: any[] = [];
-    let unCompletedTasks: any[] = [];
+  const [userId, setUserId] = useState<number>(1);
+  const [title, setTitle] = useState<string>('');
+  const [completed, setCompleted] = useState<string>('false');
+  const [displayModal, setDisplaymodal] = useState<boolean>(false);
+  const [formType, setFormType] = useState<string>('create')
 
-    tasks.forEach((task:any) => {
+  const handleOnSubmit = async () => {
+    console.log('sumitted');
+    const payload = {
+      userId: userId ? userId : 1,
+      title,
+      completed: completed === 'true' ? true : false
+    }
+    const res = await fetch("https://jsonplaceholder.typicode.com/todos", {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      }
+    });
+    const data: any = await res.json();
+    if(data){
+      console.log('data created successfully');
+      taskArray.push(data);
+      setDisplaymodal(false);
+    }
+  }
+
+  const openEditModal = (formType: string, task: Task) => {
+    setFormType(formType);
+    setDisplaymodal(true);
+    setCurrentTask(task);
+  }
+
+  const handleDeleteAction = async (task: Task) => {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${task.id}`, {
+      method: 'DELETE',
+    });
+    const data: any = await response.json();
+    if(data){
+      console.log('data deleted successfully');
+      const updatedList = taskArray.filter((item: Task) => {
+        return item.id !== task.id
+      } );
+      setTaskArray(updatedList);
+      console.log('updated Array', taskArray);
+    }
+  }
+
+  const handleEditAction = async (task: Task, payload?: any) => {
+    if(formType === 'edit'){
+      payload = {
+        userId: userId ? userId : 1,
+        title,
+        completed: completed === 'true' ? true : false
+      }
+    }
+    const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${task.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      }
+    });
+    const data: any = await response.json();
+    if(data){
+      payload = null;
+      let updatedTasks = taskArray.map((item: Task, idx: number, array: Task[]) => {
+        if(item.id === task.id){
+          Object.assign(item, data);
+        }
+        return item;
+      } );
+      setDisplaymodal(false)
+      setTaskArray(updatedTasks);
+    }
+  }
+
+  const hydrateTasks = (tasks: Task[]) => {
+    let completedTasks: Task[] = [];
+    let unCompletedTasks: Task[] = [];
+
+    tasks.forEach((task:Task) => {
       if(task.completed){
         completedTasks.push(task);
         setCompletedTasks(completedTasks.length);
@@ -44,13 +125,15 @@ const Home: NextPage = ({tasks}: any) => {
       }
     })
   }
+
   useEffect(() => {
     if(tasks){
       setTotalTasks(tasks.length);
+      setTaskArray(tasks);
       hydrateTasks(tasks);
     }
-  }, [tasks])
-  
+  }, [tasks, taskArray])
+
   return (
     <div>
       <Head>
@@ -61,9 +144,6 @@ const Home: NextPage = ({tasks}: any) => {
       </Head>
 
       <main className={styles.main}>
-        <div className={`${styles.sidebar}`}>
-          <h1 className={`h1 text-light`}>User Name</h1>
-        </div>
         <div className={styles.mainContent}>
           <div className='flex justify-between'>
             <div className='flex-1'>
@@ -79,11 +159,11 @@ const Home: NextPage = ({tasks}: any) => {
             <h1 className={`h1 text-light`}>Whats up Michael!</h1>
           </div>
 
-          <div className='flex'>
-              <div className='flex-1 mr-1'>
+          <div className={styles.streak}>
+              <div className='flex-1'>
                 <StreakCard title='Uncompleted Tasks' percentage={((unCompletedTasks/ totalTasks) * 100)} numOfTasks={unCompletedTasks} color="#D103FC" />
               </div>
-              <div className='flex-1 ml-1'>
+              <div className='flex-1'>
                 <StreakCard title='Completed Tasks' percentage={((completedTasks / totalTasks) * 100)} numOfTasks={completedTasks} color="#4F74FF" />
               </div>
           </div>
@@ -91,21 +171,66 @@ const Home: NextPage = ({tasks}: any) => {
           <div>
             <p>Todays Tasks</p>
             {
-              tasks && tasks.map((task: any) => {
-                // return <div key={task.id}>
-                //         <TaskCard task={task}/>
-                //       </div>
-                return <TaskCard key={task.id} task={task} />
+              taskArray && taskArray.map((task: any) => {
+                return <TaskCard 
+                  key={task.id} 
+                  task={task} 
+                  handleEditAction={handleEditAction} 
+                  handleDeleteAction={handleDeleteAction}
+                  setDisplayModal={openEditModal}  />
               })
             }
           </div>
 
           <div className={styles.floatBtn}>
-            <button>
+            <button onClick={() => setDisplaymodal(true)}>
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>
           </div>
         </div>
+
+        <div className={`modal ${displayModal ? 'active' : 'deactive'}`}>
+          <div className='modal-body'>
+            <div className='card'>
+              <form>
+                <div>
+                  <input type="number" className='input' placeholder='user id' value={userId} onChange={(e) => setUserId(parseInt(e.target.value))} />
+                </div>
+
+                <div>
+                  <input type="text" className='input' placeholder='title' value={title} onChange={(e) => setTitle(e.target.value)} />
+                </div>
+
+                <div>
+                  <select name="completed" className='input' id="completed" value={completed} onChange={(e) => setCompleted(e.target.value)}>
+                    <option value="true">True</option>
+                    <option value="false">false</option>
+                  </select>
+                </div>
+
+                <div>
+                  {
+                    formType === 'create' ?
+                    <button onClick={(e) => {
+                      e.preventDefault();
+                      handleOnSubmit();
+                     
+                    }}>Submit</button> : 
+                    
+                    <button onClick={(e) => {
+                      e.preventDefault();
+                      handleEditAction(currentTask);
+                     
+                    }}>Edit</button>
+                  }
+
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+
       </main>
 
     </div>

@@ -4,7 +4,6 @@
 
 .main {
   min-height: 100vh;
-  padding: 4rem 0;
   background: #0A155A;
   position: relative;
 }
@@ -19,15 +18,10 @@
 .mainContent {
   background-color: #3D47AF;
   min-height: 100vh;
-  min-width: 100%;
-  padding: 2rem 3rem;
-  border-top-left-radius: 40px;
-  border-bottom-left-radius: 40px;
+  width: 100%;
+  padding: 2rem 2rem;
   color: #BBC2D8;
   z-index: 2;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 .welcomeText {
@@ -154,6 +148,23 @@
   width: 60px;
 }
 
+.streak {
+  display: flex;
+}
+
+.streak{
+  flex: 1;
+}
+
+@media (max-width: 751px) {
+  .streak {
+    width: 100%;
+    flex-direction: column;
+  }
+  .streak .flex-1 {
+    margin: 1rem auto;
+  }
+}
 @media (max-width: 600px) {
   .grid {
     width: 100%;

@@ -73,6 +73,7 @@ a {
 
 .flex-1 {
   flex: 1;
+  margin: auto .85rem;
 }
 
 .justify-between {
@@ -113,5 +114,56 @@ a {
   margin: 2rem auto;
   font-size: 50px;
   font-style: normal;
+}
+
+.modal {
+  background-color: #3d47afb9;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  padding: 2rem;
+  vertical-align: middle;
+  z-index: 10;
+}
+
+.modal > .modal-body{
+  width: 60%;
+  height: max-content;
+  margin: 3rem auto;
+  vertical-align: middle;
+}
+
+.active {
+  display: block;
+}
+
+.deactive {
+  display: none;
+}
+
+.input {
+  margin: 2rem auto;
+  padding: 1rem;
+  font-size: 18px;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.modal button {
+  border: none;
+  color: white;
+  background-color: #D103FC;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+@media screen and (max-width: 751px) {
+  .flex-1 {
+    margin: 1rem 0;
+  }
 }
 
