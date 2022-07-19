@@ -193,7 +193,7 @@ const Home: NextPage = ({tasks}: any) => {
           <div className='modal-body'>
             <div className='card'>
               <form>
-                <div>
+                <div style={{display: 'none'}}>
                   <input type="number" className='input' placeholder='user id' value={userId} onChange={(e) => setUserId(parseInt(e.target.value))} />
                 </div>
 
